@@ -2,6 +2,6 @@ FastAPI
 uvicorn
 pandas
 pydantic
-scikit-learn==1.4.0
-numpy==1.26.4
-gunicorn==21.2.0
+scikit-learn==1.6.1
+numpy
+gunicorn

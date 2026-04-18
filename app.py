@@ -12,7 +12,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
 import joblib
 
-file_path = r"C:\Users\HAI\OneDrive\Desktop\machine learning pratice\lone_prediction\loan_dataset.csv"
+file_path = r"loan_dataset.csv"
 
 class LoadDataset:
     def __init__(self,file_path):
@@ -91,7 +91,10 @@ class TrainModel:
             grid = GridSearchCV(pipe,para_grid,cv = 5,n_jobs = -1,verbose = 2,scoring = 'accuracy')
             grid.fit(x_train,y_train)
             predict = grid.predict(x_test)
-            return self.data,grid,predict,y_test
+            import pickle
+            with open("model.pkl", "wb") as f:
+                pickle.dump(grid.best_estimator_, f)
+            return self.data,predict,y_test
         except Exception as e:
             print('Model is not Sucessfully trained',e)
             return None, None, None, None
@@ -110,13 +113,12 @@ class Evalution:
             return acc,pre,rec,f1
         except Exception as e:
             print('Evalution is not Sucessfully done',e)
-            return None, None, None, None 
-            
+            return None, None, None, None        
                                      
 if __name__ == "__main__":
     result = LoadDataset(file_path).load_data()
     data_preprocessing = DataPreprocessing(result).preprocess_data()
-    data,grid,predict,y_test = TrainModel(data_preprocessing).train_model()
+    data,predict,y_test = TrainModel(data_preprocessing).train_model()
     print('no of columns',data.info())
     acc,pre,rec,f1 = Evalution(predict,y_test).evaltion()
     

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import joblib
+import pickle
 import pandas as pd
 from pydantic import BaseModel
 import uvicorn
@@ -23,7 +23,8 @@ model = None
 @app.on_event('startup')
 def load_data():
     global model 
-    model = joblib.load('loan_prediction_model.pkl')   
+    with open("model.pkl", "rb") as f:
+        model = pickle.load(f)  
     
 @app.post('/lone_prediction')
 def lone_prediction_status(data:LoadData):
