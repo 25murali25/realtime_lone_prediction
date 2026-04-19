@@ -1,43 +1,43 @@
-name: MLOps CI/CD Pipeline
+name: To Do the CI/CD pipeline
 
 on:
   push:
     branches:
-      - main          # Triggers on every push to main
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Step 1: Checkout the code
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # Step 2: Login to DockerHub
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
+      #Login to Docker 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # Step 3: Build Docker Image
-      - name: Build Docker Image
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_PASSWORD}}
+      
+      #build the docker image
+      - name: Build the Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/lone-mlops:latest .
+          docker build -t ${{secrets.DOCKER_USERNAME}}/lone-status:latest .
 
-      # Step 4: Push to DockerHub
-      - name: Push to DockerHub
+      #Push the Docker Image
+      - name: Push the Docker Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/lone-mlops:latest
+          docker push ${{secrets.DOCKER_USERNAME}}/lone-status:latest
 
-      # Step 5: SSH into EC2 and Deploy
-      - name: Deploy to EC2
+      #Login to EC2 instance
+      - name: Login to EC2 instance
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{secrets.EC2_HOST}} 
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{secrets.EC2_SSH_KEY}}
           script: |
-            bash /home/ubuntu/deploy.sh
+            docker pull ${{secrets.DOCKER_USERNAME}}/lone-status:latest
+            docker stop lone-app || true
+            docker rm lone-app || true
+            docker run -d -p 8001:8001 --name lone-status ${{secrets.DOCKER_USERNAME}}/lone-status:latest
