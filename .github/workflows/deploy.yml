@@ -40,4 +40,4 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/lone-status:latest
             docker stop lone-app || true
             docker rm lone-app || true
-            docker run -d -p 8001:8001 --name lone-status ${{ secrets.DOCKER_USERNAME }}/lone-status:latest
+            docker run -d -p 8001:8001 --name lone-app ${{ secrets.DOCKER_USERNAME }}/lone-status:latest
